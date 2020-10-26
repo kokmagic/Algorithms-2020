@@ -2,6 +2,12 @@ package lesson1;
 
 import kotlin.NotImplementedError;
 
+import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @SuppressWarnings("unused")
 public class JavaTasks {
     /**
@@ -98,8 +104,33 @@ public class JavaTasks {
      * 99.5
      * 121.3
      */
-    static public void sortTemperatures(String inputName, String outputName) {
-        throw new NotImplementedError();
+    static public void sortTemperatures(String inputName, String outputName) throws IOException {
+        // трудоемкость o(n log n) ресурсоемкость o(n)
+        List<Integer> tempList = new ArrayList<>();
+        double temp;
+        BufferedReader input = new BufferedReader(new FileReader(inputName));
+        String line;
+        try (input) {
+            while ((line = input.readLine()) != null) {
+                temp = Double.parseDouble(line);
+                temp *= 10;
+                tempList.add((int) temp);
+            }
+        }
+        int[] listForSort = new int[tempList.size()];
+        for (int i = 0; i < listForSort.length; i ++) {
+            listForSort[i] = tempList.get(i);
+        }
+        Sorts.quickSort(listForSort);
+        BufferedWriter output = new BufferedWriter(new FileWriter(outputName));
+        try (output) {
+            for (int i : listForSort) {
+                temp = i;
+                temp /= 10;
+                output.write(String.valueOf(temp));
+                output.newLine();
+            }
+        }
     }
 
     /**
@@ -131,8 +162,41 @@ public class JavaTasks {
      * 2
      * 2
      */
-    static public void sortSequence(String inputName, String outputName) {
-        throw new NotImplementedError();
+    static public void sortSequence(String inputName, String outputName) throws IOException {
+        Map<Integer, Integer> numbers = new HashMap<>();
+        List<Integer> numList = new ArrayList<>();
+        int number;
+        int maxCount = 0;
+        int maxNum = 0;
+        BufferedReader input = new BufferedReader(new FileReader(inputName));
+        String line;
+        try (input) {
+            while ((line = input.readLine()) != null) {
+                number = Integer.parseInt(line);
+                numList.add(number);
+                if (!numbers.containsKey(number)) {
+                    numbers.put(number, 1);
+                } else numbers.put(number, numbers.get(number) + 1);
+                if ((number >= maxNum && numbers.get(number) > maxCount) || (number < maxNum && numbers.get(number) == maxCount)) {
+                    maxNum = number;
+                    maxCount = numbers.get(number);
+                }
+            }
+        }
+        BufferedWriter output = new BufferedWriter(new FileWriter(outputName));
+        try (output) {
+            for (int i : numList) {
+                if (i != maxNum) {
+                    output.write(String.valueOf(i));
+                    output.newLine();
+                }
+            }
+            for (int i = 0; i < maxCount; i++) {
+                output.write(String.valueOf(maxNum));
+                output.newLine();
+            }
+        }
+
     }
 
     /**

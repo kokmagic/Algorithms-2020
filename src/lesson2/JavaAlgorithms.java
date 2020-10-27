@@ -100,6 +100,7 @@ public class JavaAlgorithms {
      * вернуть ту из них, которая встречается раньше в строке first.
      */
     static public String longestCommonSubstring(String first, String second) {
+        // и трудоемкость и ресурсоемкость o(m * n) m и n длины строк
         int[][] subLength = new int[first.length()][second.length()];
         int maxLength = 0;
         StringBuilder substring = new StringBuilder();

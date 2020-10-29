@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> implements CheckableSortedSet<T> {
 
     private static class Node<T> {
-        final T value;
+        T value;
         Node<T> left = null;
         Node<T> right = null;
 
@@ -101,8 +101,35 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
      */
     @Override
     public boolean remove(Object o) {
-        // TODO
-        throw new NotImplementedError();
+        if (o == null) return false;
+        if (!contains(o)) return false;
+        T t = (T) o;
+        root = remove(root, t);
+        size--;
+        return true;
+    }
+
+    public Node<T> remove(Node<T> current, T value) {
+        int comparison = value.compareTo(current.value);
+        if (comparison < 0) {
+            current.left = remove(current.left, value);
+            return current;
+        }
+        if (comparison > 0) {
+            current.right = remove(current.right, value);
+            return current;
+        }
+        if (current.left == null && current.right == null) return null;
+        if (current.right == null) return current.left;
+        if (current.left == null) return current.right;
+        T smallestValue = findMinimum(current.right);
+        current.value = smallestValue;
+        current.right = remove(current.right, smallestValue);
+        return current;
+
+    }
+    private T findMinimum (Node<T> root) {
+        return root.left == null ? root.value : findMinimum(root.left);
     }
 
     @Nullable

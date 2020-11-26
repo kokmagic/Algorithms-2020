@@ -2,6 +2,8 @@ package lesson7;
 
 import kotlin.NotImplementedError;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @SuppressWarnings("unused")
@@ -19,7 +21,28 @@ public class JavaDynamicTasks {
      * При сравнении подстрок, регистр символов *имеет* значение.
      */
     public static String longestCommonSubSequence(String first, String second) {
-        throw new NotImplementedError();
+        //и трудоемкость и ресурсоемкость o(m * n) m и n длины строк
+        StringBuilder result = new StringBuilder();
+        int[][] subSequence = new int[first.length() + 1][second.length() + 1];
+        for (int i = 0; i < first.length(); i++) {
+            for (int j = 0; j < second.length(); j ++) {
+                if (first.charAt(i) == second.charAt(j)) {
+                    subSequence[i + 1][j + 1] = subSequence[i][j] +1;
+                } else subSequence[i + 1][j + 1] = Math.max(subSequence[i + 1][j], subSequence[i][j + 1]);
+            }
+        }
+        int i = first.length();
+        int j = second.length();
+        while (i > 0 && j > 0) {
+            if (first.charAt(i - 1) == second.charAt(j - 1)) {
+                result.insert(0, first.charAt(i - 1));
+                i--;
+                j--;
+            } else if (subSequence[i][j] == subSequence[i - 1][j]) {
+                i--;
+            } else j--;
+        }
+        return result.toString();
     }
 
     /**
@@ -35,7 +58,35 @@ public class JavaDynamicTasks {
      * В примере ответами являются 2, 8, 9, 12 или 2, 5, 9, 12 -- выбираем первую из них.
      */
     public static List<Integer> longestIncreasingSubSequence(List<Integer> list) {
-        throw new NotImplementedError();
+        //трудоемкость о(n^2) ресурсоемкость о(n)
+        List<Integer> result = new ArrayList<>();
+        if (list.size() <= 1) return list;
+        int[] lisLength = new int[list.size()];
+        int[] recovery = new int[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            lisLength[i] = 1;
+            recovery[i] = -1;
+            for (int j = 0; j < list.size(); j++) {
+                if (list.get(j) < list.get(i) && lisLength[j] + 1 > lisLength[i]) {
+                    lisLength[i] = lisLength[j] + 1;
+                    recovery[i] = j;
+                }
+            }
+        }
+        int lastPos = 0;
+        int length = lisLength[0];
+        for (int i = 0; i < list.size(); i++) {
+            if (lisLength[i] > length) {
+                lastPos = i;
+                length = lisLength[i];
+            }
+        }
+        while (lastPos != -1) {
+            result.add(list.get(lastPos));
+            lastPos = recovery[lastPos];
+        }
+        Collections.reverse(result); // не нашел как можно добавлять элемент в начало массива, а не конец
+        return result;
     }
 
     /**

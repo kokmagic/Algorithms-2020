@@ -15,6 +15,8 @@ public class OpenAddressingSet<T> extends AbstractSet<T> {
 
     private final Object[] storage;
 
+    private final Object deleted;
+
     private int size = 0;
 
     private int startingIndex(Object element) {
@@ -28,6 +30,7 @@ public class OpenAddressingSet<T> extends AbstractSet<T> {
         this.bits = bits;
         capacity = 1 << bits;
         storage = new Object[capacity];
+        deleted = new Object();
     }
 
     @Override
@@ -67,7 +70,7 @@ public class OpenAddressingSet<T> extends AbstractSet<T> {
         int startingIndex = startingIndex(t);
         int index = startingIndex;
         Object current = storage[index];
-        while (current != null) {
+        while (current != null && current != deleted) {
             if (current.equals(t)) {
                 return false;
             }
@@ -95,7 +98,21 @@ public class OpenAddressingSet<T> extends AbstractSet<T> {
      */
     @Override
     public boolean remove(Object o) {
-        return super.remove(o);
+        //трудоемкость o(n) ресурсоемкость o(1)
+        int startingIndex = startingIndex(o);
+        int index = startingIndex;
+        Object current = storage[index];
+        while (current != null) {
+            if (current.equals(o)) {
+                storage[index] = deleted;
+                size--;
+                return true;
+            }
+            index = (index + 1) % capacity;
+            if (index == startingIndex) throw new IllegalStateException("Table is full");
+            current = storage[index];
+        }
+        return false;
     }
 
     /**
@@ -111,7 +128,46 @@ public class OpenAddressingSet<T> extends AbstractSet<T> {
     @NotNull
     @Override
     public Iterator<T> iterator() {
-        // TODO
-        throw new NotImplementedError();
+        return new OpenAddressingSetIterator();
     }
+
+    public class OpenAddressingSetIterator implements Iterator <T> {
+        private int index = 0;
+        private int prev = 1;
+        Object current = null;
+
+        private void move(){
+            while (index < capacity && (storage[index] == null || storage[index] == deleted)){
+                index += 1;
+            }
+        }
+
+        private OpenAddressingSetIterator(){
+            move();
+        }
+
+        @Override
+        public boolean hasNext() {
+            return index < capacity;
+        }
+
+        @Override
+        public T next() {
+            if (!hasNext()) throw new IllegalStateException();
+            current = storage[index];
+            prev = index;
+            index += 1;
+            move();
+            return (T) current;
+        }
+
+        @Override
+        public void remove() {
+            if (current == null || prev == -1) throw new IllegalStateException();
+            storage[prev] = deleted;
+            size--;
+        }
+
+    }
+
 }

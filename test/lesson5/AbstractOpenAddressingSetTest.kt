@@ -40,6 +40,7 @@ abstract class AbstractOpenAddressingSetTest {
     }
 
     protected fun doRemoveTest() {
+        //тут нечего добавить...
         val random = Random()
         for (iteration in 1..100) {
             val bitsNumber = random.nextInt(4) + 6
@@ -121,6 +122,7 @@ abstract class AbstractOpenAddressingSetTest {
     }
 
     protected fun doIteratorRemoveTest() {
+        //опять же все рассмотрено уже..
         val random = Random()
         for (iteration in 1..100) {
             val controlSet = mutableSetOf<String>()

@@ -148,11 +148,13 @@ public class OpenAddressingSet<T> extends AbstractSet<T> {
 
         @Override
         public boolean hasNext() {
+            //трудоемкость o(1) ресурсоемкость o(1)
             return index < capacity;
         }
 
         @Override
         public T next() {
+            //трудоемкость o(n) ресурсоемкость o(1)
             if (!hasNext()) throw new IllegalStateException();
             current = storage[index];
             prev = index;
@@ -163,6 +165,7 @@ public class OpenAddressingSet<T> extends AbstractSet<T> {
 
         @Override
         public void remove() {
+            //трудоемкость o(1) ресурсоемкость o(1)
             if (current == null || prev == -1) throw new IllegalStateException();
             storage[prev] = deleted;
             size--;
